@@ -1,0 +1,63 @@
+#+TITLE: Python mDNS Utilities for Nix
+#+STARTUP: org-startup-with-inline-images inlineimages
+#+OPTIONS: ^:nil # Disable sub/superscripting with bare _; _{...} still works
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+
+* Using =python-zeroconf= on Nix
+
+  We're going to start a nix-shell configuration, with Python 3.5, virtualenv and pip avialable.
+
+** Getting Python onto Nix
+
+   Get the packages we'll need from github.com:
+
+   #+BEGIN_EXAMPLE
+   $ mkdir -p ~/src && cd ~/src
+   $ git clone https://github.com/pjkundert/python-zeroconf -b browser-find
+   $ git clone https://github.com/pjkundert/mdns-python
+   #+END_EXAMPLE
+
+** Create a Python Virtual Environment
+   
+   We want to make =python3= available whenever we need it, without being inside the nix-shell
+   instance.  We'll create a virtualenv containing links to the Python interpreter, and the various
+   python modules needed by the python-zeroconf =registration.py= and =browser.py= utilities.
+
+   #+BEGIN_EXAMPLE
+   $ cd ~/src/mdns-python
+   $ nix-shell
+
+   [nix-shell:~/src/mdns-python]$ virtualenv venv
+   [nix-shell:~/src/mdns-python]$ source venv/bin/activate
+   ...
+   (venv)
+   [nix-shell:~/src/mdns-python]$ pip install ifaddr
+   ...
+   (venv)
+   ^D
+   $
+   #+END_EXAMPLE
+
+** Simulating an mDNS Service Registration
+
+   Later, whenever you log in and want to use python w/ ifaddr, eg. to use python-zeroconf utilites
+   like =registration.py=, to simulate an mDNS service advertisement:
+
+   #+BEGIN_EXAMPLE
+   $ source ~/src/mdns-python/venv/bin/activate
+   (venv)
+   $ PYTHONPATH=~/src/python-zeroconf/ ~/src/python-zeroconf/examples/registration.py &
+   #+END_EXAMPLE
+
+** Browsing for mDNS Services
+
+   To browse available networks for mDNS services:
+
+   #+BEGIN_EXAMPLE
+   $ source ~/src/mdns-python/venv/bin/activate
+   (venv)
+   $ PYTHONPATH=~/src/python-zeroconf/ ~/src/python-zeroconf/examples/browser.py
+   #+END_EXAMPLE
+
+
+** Setting up ZeroTier
