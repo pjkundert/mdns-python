@@ -2,3 +2,4 @@
 .vagrant
 dist/
 venv/
+README.tex
